@@ -9,11 +9,8 @@ class DashboardController extends Controller
 {
     public function admin()
     {
-        $users = User::count();
-        $exams = ExamResult::count();
-        $average = ExamResult::average('score');
 
-        return view('admin.dashboard', compact('users', 'exams', 'average'));
+        return view('admin.dashboard');
     }
 
     public function index()

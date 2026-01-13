@@ -21,19 +21,26 @@
                 </ul>
             </div>
         @endif
-        
+    
+    @if(session('error'))
+        <div style="color: red;">{{ session('error') }}</div>
+    @endif
+    
+    @if(session('success'))
+        <div style="color: green;">{{ session('success') }}</div>
+    @endif
+
         <form action="{{ route('login') }}" method="POST" class="space-y-4">
             @csrf
-
             <div>
-                <label class="block text-sm font-medium text-gray-700">Usuario</label>
+                <label class="block text-sm font-medium text-gray-700">CI</label>
                 <input type="username" name="username" value="{{ old('username') }}"
                     class="mt-1 w-full border border-gray-300 rounded-lg p-2 focus:border-blue-500 focus:ring focus:ring-blue-200"
                     required autofocus>
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700">Contraseña</label>
+                <label class="block text-sm font-medium text-gray-700">Clave</label>
                 <input type="password" name="password"
                     class="mt-1 w-full border border-gray-300 rounded-lg p-2 focus:border-blue-500 focus:ring focus:ring-blue-200"
                     required>
@@ -45,5 +52,5 @@
             </button>
         </form>
     </div>
-</body>
-</html>
+    </body>
+    </html>

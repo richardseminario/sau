@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -13,52 +12,46 @@ class AuthController extends Controller
     {
         return view('auth.login');
     }
-
+    
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'username' => ['required', 'username'],
-            'password' => ['required'],
-        ]);
+        $username = $request->input('username');
+        $password = $request->input('password');
+        $ip = $request->ip();
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            
-            $user = Auth::user();
-            if ($user->role === 'admin') {
-                return redirect()->intended('/admin/dashboard');
-            } 
-            return redirect()->route('dashboard');
-            
+        $user = DB::select('SELECT * FROM sau.f_login(?, ?, ?)', [$username, $password, $ip]);
+        
+        if (!empty($user)) {
+            $userData = $user[0];
+
+            // ✅ GUARDAR DATOS EN SESIÓN
+            session([
+                'authenticated' => true,
+                'user_id' => $userData->r_id_postulante ?? null,
+                'username' => $username,
+                'nro_dip' => $userData->r_nro_dip ?? null,
+                'fec_nac' => $password,
+                'user_name' => $userData->r_nombres_apellidos ?? null,
+                'user_career' => $userData->r_programa ?? null,
+                'user_id_post' => $userData->r_id_examen_postulante ?? null,
+                'user_time' => $userData->r_timpo_restante ?? null,
+                'user_status' => $userData->r_estado ?? null,
+                'user_data' => $userData
+            ]);
+
+            // Redirigir a la vista con los datos (manteniendo tu flujo actual)
+            return view('exams.info', [
+                'user_ci' => $userData->r_nro_dip ?? null,
+                'user_name' => $userData->r_nombres_apellidos ?? null,
+                'user_career' => $userData->r_programa ?? null,
+                'user_id_post' => $userData->r_id_examen_postulante ?? null,
+                'user_time' => $userData->r_timpo_restante ?? null,
+                'user_status' => $userData->r_estado ?? null,
+            ]);
+
+        } else {
+            return redirect()->back()->with('error', 'Credenciales inválidas');
         }
-
-        return back()->withErrors([
-            'username' => 'Las credenciales no son correctas.',
-        ])->onlyInput('username');
-    }
-
-    public function showRegisterForm()
-    {
-        return view('auth.register');
-    }
-
-    public function register(Request $request)
-    {
-        $data = $request->validate([
-            'username' => ['required', 'string', 'max:255', 'unique:users,username'],
-            'email' => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', 'confirmed', 'min:6'],
-        ]);
-
-        $user = User::create([
-            'username' => $data['username'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
-
-        Auth::login($user);
-
-        return redirect('/dashboard');
     }
 
     public function logout(Request $request)

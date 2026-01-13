@@ -97,6 +97,21 @@ return [
             'sslmode' => 'prefer',
         ],
 
+        'pgsql_j' => [
+            'driver' => 'pgsql',
+            'url' => env('DB_URL_j'),
+            'host' => env('DB_HOST_j', '10.10.166.120'),
+            'port' => env('DB_PORT_j', '5432'),
+            'database' => env('DB_DATABASE_j', 'jachasun'),
+            'username' => env('DB_USERNAME_j', 'rcondori'),
+            'password' => env('DB_PASSWORD_j', 'Rcondori2025*'),
+            'charset' => env('DB_CHARSET', 'utf8'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'search_path' => 'public',
+            'sslmode' => 'prefer',
+        ],
+
         'sqlsrv' => [
             'driver' => 'sqlsrv',
             'url' => env('DB_URL'),

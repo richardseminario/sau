@@ -1,7 +1,6 @@
-@extends('layouts.app')
+<x-app-layout>
+    <div class="flex min-h-screen bg-gray-100">
 
-@section('content')
-<div class="flex min-h-screen bg-gray-100">
     {{-- Sidebar vertical --}}
     <aside class="w-72 bg-gray-800 text-white flex flex-col">
         <div class="p-6 text-2xl font-bold border-b border-gray-700">
@@ -9,80 +8,120 @@
         </div>
 
         <nav class="flex-1 p-4 space-y-3">
-            <a href="{{ route('admin.dashboard', ['section' => 'stats']) }}"
-               class="block px-4 py-2 rounded-lg hover:bg-gray-700 {{ request('section') === 'stats' || request('section') === null ? 'bg-blue-800' : '' }}">
-                📊 Estadísticas
-            </a>
+            {{-- Cargar Preguntas --}}
             <a href="{{ route('admin.dashboard', ['section' => 'create']) }}"
-               class="block px-4 py-2 rounded-lg hover:bg-gray-700 {{ request('section') === 'create' ? 'bg-blue-800' : '' }}">
-                ➕ Crear Examen
+               class="block px-4 py-2 rounded-lg hover:bg-gray-700
+               {{ request('section') === 'create' ? 'bg-blue-800' : '' }}">
+                ➕ Cargar Preguntas
             </a>
-            <a href="{{ route('admin.dashboard', ['section' => 'admins']) }}"
-               class="block px-4 py-2 rounded-lg hover:bg-gray-700 {{ request('section') === 'admins' ? 'bg-blue-800' : '' }}">
-                👤 Administradores
+
+            {{-- Iniciar Torneos --}}
+            <a href="{{ route('admin.dashboard', ['section' => 'tournaments']) }}"
+               class="block px-4 py-2 rounded-lg hover:bg-gray-700
+               {{ request('section') === 'tournaments' ? 'bg-blue-800' : '' }}">
+                🏆 Iniciar Torneos
+            </a>
+
+            {{-- Ver Resultados --}}
+            <a href="{{ route('admin.dashboard', ['section' => 'results']) }}"
+               class="block px-4 py-2 rounded-lg hover:bg-gray-700
+               {{ request('section') === 'results' ? 'bg-blue-800' : '' }}">
+                📄 Ver Resultados
+            </a>
+
+            {{-- Agregar Director --}}
+            <a href="{{ route('admin.dashboard', ['section' => 'roles']) }}"
+               class="block px-4 py-2 rounded-lg hover:bg-gray-700
+               {{ request('section') === 'roles' ? 'bg-blue-800' : '' }}">
+                👤 Agregar Directores
             </a>
         </nav>
     </aside>
 
     {{-- Contenido dinámico --}}
     <main class="flex-1 p-8">
+
+        {{-- Cargar Preguntas --}}
         @if(request('section') === 'create')
-            <h1 class="text-3xl font-bold mb-6">➕ Crear Examen</h1>
+            <h1 class="text-3xl font-bold mb-6">➕ Cargar Preguntas</h1>
+
             <div class="bg-white p-6 rounded shadow">
-                <form action="#" method="POST">
+                <form method="POST">
                     @csrf
                     <div class="mb-4">
-                        <label class="block font-semibold">Título del examen</label>
-                        <input type="text" name="title" class="w-full border rounded px-3 py-2 mt-2"
-                               placeholder="Ej: Matemáticas Básicas">
+                        <label class="block font-semibold">Pregunta</label>
+                        <input type="text" class="w-full border rounded px-3 py-2 mt-2"
+                               placeholder="Qué es la capital de Francia?">
                     </div>
 
                     <div class="mb-4">
-                        <label class="block font-semibold">Descripción</label>
-                        <textarea name="description" class="w-full border rounded px-3 py-2 mt-2" rows="3"
-                                  placeholder="Descripción breve del examen"></textarea>
+                        <label class="block font-semibold">Opciones</label>
+                        <input type="text" class="w-full border rounded px-3 py-2 mt-2 mb-2"
+                               placeholder="Berlín">
+                        <input type="text" class="w-full border rounded px-3 py-2 mb-2"
+                               placeholder="Madrid">
+                        <input type="text" class="w-full border rounded px-3 py-2 mb-2"
+                               placeholder="París">
+                        <input type="text" class="w-full border rounded px-3 py-2"
+                               placeholder="Roma">
+
+                        <label for="respuesta_correcta" class="block font-semibold mt-4">Respuesta Correcta</label>
+                        <input type="text" id="respuesta_correcta" name="respuesta_correcta"
+                               class="w-full border rounded px-3 py-2 mt-2"
+                               placeholder="Introduce la respuesta correcta (Ej: Paris)">
                     </div>
 
-                    <button type="submit" class="bg-blue-900 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                        Guardar Examen
+                    <button type="submit"
+                        class="bg-blue-900 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                        Guardar Pregunta
+                    </button>
+
+                    <p class="text-sm text-gray-600 mb-2 pt-6">Sube un archivo con el formato de preguntas para importarlas.</p>
+                
+                    <input type="file" id="archivo_importacion" name="archivo_importacion" 
+                            class="w-full border rounded px-3 py-2 mt-2"
+                            accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+                    
+                    <button type="button" id="boton_importar"
+                            class="w-full bg-blue-900 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mt-4">
+                            Importar Preguntas
                     </button>
                 </form>
             </div>
 
-        @elseif(request('section') === 'admins')
-            <h1 class="text-3xl font-bold mb-6">👤 Administradores</h1>
+        {{-- Iniciar Torneos --}}
+        @elseif(request('section') === 'tournaments')
+            <h1 class="text-3xl font-bold mb-6">🏆 Iniciar Torneos</h1> 
+
             <div class="bg-white p-6 rounded shadow">
-                <p class="mb-4 text-gray-700">Lista de administradores actuales:</p>
+                <p class="text-gray-700">Aquí podrás crear y administrar torneos de exámenes.</p>
+            </div>
 
-                <ul class="list-disc ml-6 mb-4 text-gray-800">
-                    <li>admin1@ejemplo.com</li>
-                    <li>admin2@ejemplo.com</li>
-                </ul>
+        {{-- Ver Resultados --}}
+        @elseif(request('section') === 'results')
+            <h1 class="text-3xl font-bold mb-6">📄 Resultados de Exámenes</h1>
 
-                <a href="{{ route('admin.add') }}"
+            <div class="bg-white p-6 rounded shadow">
+                <p class="text-gray-700">Aquí se mostrarán los resultados de los usuarios.</p>
+            </div>
+
+        {{-- Agregar Directores --}}
+        @elseif(request('section') === 'roles')
+            <h1 class="text-3xl font-bold mb-6">👤 Agregar Directores</h1>
+
+            <div class="bg-white p-6 rounded shadow">
+                <p class="mb-4 text-gray-700">Administradores actuales:</p>
+
+                <a href="#"
                    class="inline-block bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
-                    ➕ Agregar Administrador
+                    ➕ Agregar Director
                 </a>
             </div>
 
         @else
-            <h1 class="text-3xl font-bold mb-6">📊 Estadísticas</h1>
-            <div class="grid grid-cols-3 gap-6">
-                <div class="p-6 bg-white rounded shadow">
-                    <h2 class="text-xl font-bold">Usuarios</h2>
-                    <p class="text-2xl">{{ $users ?? 0 }}</p>
-                </div>
-                <div class="p-6 bg-white rounded shadow">
-                    <h2 class="text-xl font-bold">Exámenes realizados</h2>
-                    <p class="text-2xl">{{ $exams ?? 0 }}</p>
-                </div>
-                <div class="p-6 bg-white rounded shadow">
-                    <h2 class="text-xl font-bold">Promedio de puntaje</h2>
-                    <p class="text-2xl">{{ isset($average) ? round($average, 2) : 0 }}</p>
-                </div>
-            </div>
+            <h1 class="text-3xl font-bold mb-6">📊 Selecciona una opción del menú</h1>
         @endif
+
     </main>
 </div>
-@endsection
-
+</x-app-layout>

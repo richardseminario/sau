@@ -32,7 +32,7 @@
             <a href="">SED-SAU</a>
             <nav class="hidden md:flex space-x-4">
                 <a href="{{ route('exams.index') }}" class="block w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded text-center transition duration-200">Simulacion de Examen PSA</a>
-                <a href="#" class="block w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded text-center transition duration-200">Entrenamiento de Examen</a>
+                <a href="{{ route('training.index') }}" class="block w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded text-center transition duration-200">Entrenamiento de Examen</a>
             </nav> 
 
             <div class="hidden md:flex items-center space-x-4">

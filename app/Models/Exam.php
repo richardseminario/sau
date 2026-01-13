@@ -6,25 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Exam extends Model
 {
-    protected $fillable = [
-        'title',
-        'description',
-        'category_id',
-        'duration',
-    ];
+    protected $connection = 'pgsql_j';
 
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
-    }
+    protected $table = 'f_lista_preguntas';
 
-    public function questions()
-    {
-        return $this->hasMany(Question::class);
-    }
+    protected $primaryKey = '_id_examen_postulante';
 
-    public function results()
-    {
-        return $this->hasMany(ExamResult::class);
-    }
+    public $timestamps = false;
 }
